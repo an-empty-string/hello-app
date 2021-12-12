@@ -45,8 +45,11 @@
           server {
             listen 443 ssl default_server;
             include snippets/snakeoil.conf;
+            absolute_redirect off;
+
             location / {
               proxy_pass http://unix:/run/hello-app/gunicorn.sock;
+              proxy_set_header Host $http_host;
             }
           }
 
