@@ -1,0 +1,61 @@
+- name: deploy the hello world app
+  hosts: localhost
+  tasks:
+    - name: install project dependencies
+      apt:
+        name: [ python3, python3-pip, python3-flask, gunicorn, nginx, ssl-cert ]
+        state: present
+
+    - name: install app
+      pip:
+        name: "{{ playbook_dir }}/src"
+        state: present
+
+    - name: create systemd service for app
+      copy:
+        content: |
+          [Unit]
+          Description=Hello app server
+
+          [Service]
+          ExecStart=/usr/bin/gunicorn -b unix:/run/hello-app/gunicorn.sock -w 1 hello_app:app
+          RuntimeDirectory=hello-app
+          DynamicUser=yes
+
+          [Install]
+          WantedBy=default.target
+
+        dest: /etc/systemd/system/hello-app.service
+        mode: 0644
+
+    - name: start and enable app
+      systemd:
+        unit: hello-app.service
+        state: started
+        enabled: yes
+
+    - name: generate snakeoil cert
+      shell: make-ssl-cert generate-default-snakeoil
+      args:
+        creates: /etc/ssl/certs/ssl-cert-snakeoil.pem
+
+    - name: configure nginx
+      copy:
+        content: |
+          server {
+            listen 443 ssl default_server;
+            include snippets/snakeoil.conf;
+            location / {
+              proxy_pass http://unix:/run/hello-app/gunicorn.sock;
+            }
+          }
+
+        dest: /etc/nginx/sites-enabled/hello-app.conf
+        mode: 0644
+      notify: [ reload nginx ]
+
+  handlers:
+    - name: reload nginx
+      systemd:
+        unit: nginx.service
+        state: reloaded
