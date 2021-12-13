@@ -26,7 +26,10 @@
             {% else %}
             The load generator is <strong>stopped</strong>.
             {% endif %}
-            <a href="{{ url_for('.toggle_load') }}">Toggle the state of the load generator.</a>
+            </p>
+            <p>
+            <a href="{{ url_for('.set_load', state=1) }}">Start the load generator.</a> &middot;
+            <a href="{{ url_for('.set_load', state=0) }}">Stop the load generator.</a>
             </p>
 
             {% if results %}

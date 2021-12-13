@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template
 
 import collections
 import datetime
@@ -54,11 +54,18 @@ def index():
     )
 
 
-@app.route("/toggle_load/")
-def toggle_load():
-    if load.is_set():
-        load.clear()
-    else:
-        load.set()
+@app.route("/set_load/<int:state>/")
+def toggle_load(state):
+    old_state = load.is_set()
 
-    return redirect(url_for(".index"))
+    if state:
+        load.set()
+    else:
+        load.clear()
+
+    return render_template(
+        "set.html",
+        name=socket.gethostname(),
+        old_state=old_state,
+        new_state=load.is_set(),
+    )

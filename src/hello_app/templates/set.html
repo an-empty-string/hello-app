@@ -1,0 +1,4 @@
+<p>On {{ name }},</p>
+<p>Before: Load generator <strong>{% if old_state %}running{% else %}stopped{% endif %}</strong>.</p>
+<p>After: Load generator <strong>{% if new_state %}running{% else %}stopped{% endif %}</strong>.</p>
+<p><a href="{{ url_for('.index') }}">Back to status page</a></p>
