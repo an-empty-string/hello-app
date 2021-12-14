@@ -55,7 +55,7 @@ def index():
 
 
 @app.route("/set_load/<int:state>/")
-def toggle_load(state):
+def set_load(state):
     old_state = load.is_set()
 
     if state:
