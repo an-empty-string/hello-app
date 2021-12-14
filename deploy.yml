@@ -22,6 +22,12 @@
           RuntimeDirectory=hello-app
           DynamicUser=yes
 
+          PrivateDevices=yes
+          PrivateNetwork=yes
+          ProtectProc=noaccess
+          ProtectHome=yes
+          NoNewPrivileges=yes
+
           [Install]
           WantedBy=default.target
 
